@@ -1,0 +1,2817 @@
+openapi: 3.0.0
+info:
+  title: The Best API Ever
+  description: API terbaik bangsa [CommonMark](http://commonmark.org/help/) or HTML.
+  version: 0.1.69
+servers:
+  - url: https://localhost:7195
+    description: Optional server description, e.g. Main (production) server
+  - url: http://localhost:5262
+    description: Optional server description, e.g. Internal staging server for testing
+
+paths:
+  # Folder 'Auth'
+  /auth/login:
+    post:
+      summary: "Login"
+      tags:
+        - "Auth"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    Username: 
+                      type: string
+                    Password:
+                      type: string
+                    version:
+                      type: string
+                    DeviceId:
+                      type: string
+      responses:
+        "200": 
+          description: "success"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      is_registered:
+                        type: boolean
+                      change:
+                        type: string
+                      supervisor_code:
+                        type: string
+                      profile:
+                        type: object
+                        properties:
+                          trainee_id:
+                            type: integer
+                          trainee_phone:
+                            type: string
+                          trainee_email:
+                            type: string
+                          change:
+                            type: string
+                          name:
+                            type: string
+                          email:
+                            type: string
+                          phone:
+                            type: string
+                          position:
+                            type: string
+                          level:
+                            type: string
+                          photo:
+                            type: string
+                      dealer:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          name:
+                            type: string
+                          code:
+                            type: string
+                          city:
+                            type: string
+                          dealer:
+                            type: string
+                          group:
+                            type: string
+                      analytic_user:
+                        type: object
+                        properties:
+                          dealer_id:
+                            type: integer
+                          dealer_branch_code:
+                            type: string
+                          job_position:
+                            type: string
+                          city:
+                            type: string
+                      access_token:
+                        type: object
+                        properties:
+                          auth_token:
+                            type: string
+                          type:
+                            type: string
+                          expires_at:
+                            type: integer
+                      force_update:
+                        type: boolean
+                      is_data_match:
+                        type: boolean
+                      go_live:
+                        type: string
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /auth/forgot-password:
+    post:
+      summary: 'Forgot Password'
+      tags:
+        - 'Auth'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    Username: 
+                      type: string
+                    Type:
+                      type: string
+                    Identifier:
+                      type: string
+      responses:
+        "200": 
+          description: "success"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /auth/register:
+    post:
+      summary: 'Register'
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data:
+                  type: object
+                  properties:
+                    Email:
+                      type: string
+                    Phone:
+                      type: string
+                    Password:
+                      type: string
+                    UserName:
+                      type: string
+                    DeviceId:
+                      type: string
+                    Version:
+                      type: string
+      responses:
+        '200':
+          description: 'success'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /auth/otp: 
+    post: 
+      summary: 'OTP'
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data:
+                  type: object
+                  properties:
+                    UserId:
+                      type: integer
+                    Pin: 
+                      type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /admin/auth/forgot-password:
+    post:
+      summary: 'Forgot Password'
+      tags:
+        - 'Profile'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    Username: 
+                      type: string
+                    Type:
+                      type: string
+                    Identifier:
+                      type: string
+      responses:
+        "200": 
+          description: "success"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  # Folder 'Profile'
+  /profile/detail":
+    get:
+      security:
+       - bearerAuth: []
+      summary: Get Profil
+      tags:
+        - Profile
+      responses:
+        '200':
+          description: A JSON array of user names
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /profile/update:
+    post:
+      summary: 'Update Profile'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Profile'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    phone: 
+                      type: string
+                    email:
+                      type: string
+                    current_password:
+                      type: string
+      responses:
+        "200": 
+          description: "success"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /profile/otp:
+    post:
+      summary: 'OTP Profile'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Profile'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    user_id: 
+                      type: string
+                    pin:
+                      type: string
+      responses:
+        "200": 
+          description: "success"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    type: string
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /profile/otp-resend:
+    post:
+      summary: 'Resend OTP Profile'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Profile'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    Userid: 
+                      type: string
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /profile/change-password:
+    post:
+      summary: 'Change Password'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Profile'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    current_password: 
+                      type: string
+                    new_password: 
+                      type: string
+                    new_password_confirmation: 
+                      type: string
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  # Folder 'Service Registration'
+  
+  /service-registration/register-walkin:
+    post:
+      summary: 'SR - Register Walk In'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Service Registration'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    police_number: 
+                      type: string
+                    time_stamp: 
+                      type: string
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /service-registration/update-service-status:
+    post:
+      summary: 'SR - Update Service Status'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Service Registration'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    service_registration_id: 
+                      type: integer
+                    service_status: 
+                      type: integer
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /service-registration/register-from-booking:
+    post:
+      summary: 'SR - Register From Booking'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Service Registration'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Data: 
+                  type: object
+                  properties:     
+                    id: 
+                      type: integer
+                    time_stamp: 
+                      type: integer
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /service-registration/list:
+    get:
+      summary: 'SR - Get Service Registration'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Service Registration'
+      parameters:
+        - in: query 
+          name: filter[Date]
+          schema: 
+            type: string
+            example: 2022
+          required: true
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      vip:
+                        type: array
+                        example: []
+                      booking: 
+                        type: array
+                        example: []
+                      walk_in:
+                        type: array
+                        example: []
+                      progress:
+                        type: array
+                        example: [{'id' : 123, 'nopol' : 'x1234xx'}]
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /service-registration/statistic:
+    get:
+      summary: 'SR - Get Service Booking Statistic'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Service Registration'
+      parameters:
+        - in: query 
+          name: filter[Date]
+          schema: 
+            type: string
+            example: 2022
+          required: true
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      special_customer:
+                        type: integer
+                      customer_less15_min: 
+                        type: integer
+                      customer_more15_min:
+                        type: integer
+                      completed_customer:
+                        type: integer
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /service-registration/booking-list:
+    get:
+      summary: 'SR - Get Service Booking List'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Service Registration'
+      parameters:
+        - in: query 
+          name: filter%5BStatus%5D
+          schema: 
+            type: string
+            example: 2022
+          allowEmptyValue: true
+        - in: query 
+          name: filter%5BPlateNumber%5D
+          schema: 
+            type: string
+            example: 2022
+          allowEmptyValue: true
+        - in: query 
+          name: filter%5BDate%5D
+          schema: 
+            type: string
+            example: 2022
+          required: true
+          allowEmptyValue: false
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BookingListData/items'
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /service-registration/resend-status-dms:
+    post:
+      summary: 'SR - Resend Status DMS'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Service Registration'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data: 
+                  type: object
+                  properties:     
+                    service_registration_id: 
+                      type: integer
+                    status_id: 
+                      type: integer
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  # Folder 'Master Data'
+
+  /master/vehicle-model:
+    get:
+      summary: 'Master - Vehicle Model'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Master Data'
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VehicleModel'
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /master/vehicle-condition:
+    get:
+      summary: 'Master - Vehicle Condition'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Master Data'
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VehicleModel'
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  # Folder 'Circle Check'
+
+  /circle-check/save-circle-check:
+    post:
+      summary: 'CC - Save Circle Check'
+      security:
+      - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    service_registration_id:
+                      type: integer
+                    customer_info:
+                      type: object
+                      properties:
+                        customer_name:
+                          type: string
+                        vin:
+                          type: string
+                        phone:
+                          type: string
+                    interior:
+                      type: object
+                      properties:
+                        stnk:
+                          type: string
+                        service_booklet:
+                          type: string
+                        spare_tire:
+                          type: string
+                        safety_kit:
+                          type: string
+                        fuel_gauge:
+                          type: string
+                        other_stuff:
+                          type: string
+                        other_stuff_notes:
+                          type: string
+                    complaint_notes:
+                      type: string
+                    
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/get-circle-check:
+    get:
+      summary: 'CC - Get Circle Check'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      parameters:
+        - in: query 
+          name: UserRegistrationId
+          schema: 
+            type: integer
+            example: 123
+          required: true
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      service_advisor:
+                        type: string
+                      service_date:
+                        type: string
+                      dealer_service:
+                        type: string
+                      customer_name:
+                        type: string
+                      phone:
+                        type: string
+                      vin:
+                        type: string
+                      plate_number:
+                        type: string
+                      vehicle_model:
+                        type: string
+                      signature:
+                        type: string
+                      exterior_view:
+                        $ref: '#/components/schemas/GetExteriorView'
+                      tire_view:
+                        $ref: '#/components/schemas/GetTireView'
+                      interior_view:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          circle_check_header_id:
+                            type: integer
+                          service_registration_id:
+                            type: integer
+                          stnk:
+                            type: string
+                          service_booklet:
+                            type: string
+                          spare_tire:
+                            type: string
+                          safety_kit:
+                            type: string
+                          fuel_gauge:
+                            type: string
+                          other_stuff:
+                            type: string
+                          other_stuff_notes:
+                            type: string
+                          interior_photos:
+                            type: string
+                      complaint_notes_view:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          circle_check_header_id:
+                            type: integer
+                          service_registration_id:
+                            type: integer
+                          notes:
+                            type: string
+                          
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/create-update-exterior-view:
+    post:
+      summary: 'CC - Create Update Exterior View'
+      security:
+      - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                service_registration_id:
+                  type: integer
+                type:
+                  type: integer
+                vehicle_condition:
+                  type: integer
+                notes:
+                  type: string
+                capture_file:
+                  type: string
+                  format: binary
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/get-exterior-view/{id}:
+    get:
+      summary: 'CC - Get Exterior View'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Suffix link dengan id
+          schema:
+            type : integer
+            format: int64
+            minimum: 1          
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/GetExteriorView/items'
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/get-exterior-view-list:
+    get:
+      summary: 'CC - Get Exterior View List'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      parameters:
+        - in: query 
+          name: UserRegistrationId
+          schema: 
+            type: integer
+            example: 123
+          required: true
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    $ref: '#components/schemas/GetExteriorView'
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/delete-exterior-view:
+    post:
+      summary: 'CC - Delete Exterior View'
+      security:
+      - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    circle_check_header_id:
+                      type: integer
+                    
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/create-update-tire-view:
+    post:
+      summary: 'CC - Create Update Tire View'
+      security:
+      - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                service_registration_id:
+                  type: integer
+                front_right:
+                  type: string
+                front_left:
+                  type: string
+                back_right:
+                  type: string
+                back_left:
+                  type: string
+                front_right_photo:
+                  type: string
+                  format: binary
+                front_left_photo:
+                  type: string
+                  format: binary
+                back_right_photo:
+                  type: string
+                  format: binary
+                back_left_photo:
+                  type: string
+                  format: binary
+                    
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/get-tire-view:
+    get:
+      summary: 'CC - Get Tire View'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      parameters:
+        - in: query 
+          name: UserRegistrationId
+          schema: 
+            type: integer
+            example: 123
+          required: true
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    $ref: '#components/schemas/GetTireView'
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/save-interior-view-photo:
+    post:
+      summary: 'CC - Save Interior View Photo'
+      security:
+      - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                service_registration_id:
+                  type: integer
+                photo_1:
+                  type: string
+                  format: binary
+                photo_2:
+                  type: string
+                  format: binary
+                photo_3:
+                  type: string
+                  format: binary
+                    
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/delete-interior-view:
+    post:
+      summary: 'CC - Delete Interior View'
+      security:
+      - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    service_registration_id:
+                      type: integer
+                    
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/delete-complaint-note:
+    post:
+      summary: 'CC - Delete Complatin Note'
+      security:
+      - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    service_registration_id:
+                      type: integer             
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/finalize-circle-check:
+    post:
+      summary: 'CC - Finalize Circle Check'
+      security:
+      - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                service_registration_id:
+                  type: integer
+                customer_name:
+                  type: string
+                vin:
+                  type: string
+                service_date:
+                  type: string
+                sign_capture:
+                  type: string
+                  format: binary
+                generated_file:
+                  type: string
+                  format: binary
+                no_hp:
+                  type: string
+                    
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/get-receiving-check-list:
+    get:
+      summary: 'CC - Get Receiving Check List'
+      security:
+       - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      parameters:
+        - in: query 
+          name: UserRegistrationId
+          schema: 
+            type: integer
+            example: 123
+          required: true
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    $ref: '#components/schemas/GetReceivingCheckList'
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /circle-check/delete-circle-check:
+    post:
+      summary: 'CC - Delete Circle Check'
+      security:
+      - bearerAuth: []
+      tags:
+        - 'Circle Check'
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    service_registration_id:
+                      type: integer
+                    
+      responses:
+        "200": 
+          description: "200 OK"
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  origin:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  # Folder 'Working Order'
+
+  /work-order/change-status:
+    post:
+      summary: 'WO - Update Status WO'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                Data:
+                  type: object
+                  properties:
+                    clock_in_clock_out_id:
+                      type: integer
+                    time_stamp:
+                      type: string
+                    status:
+                      type: integer
+                    stop_reason:
+                      type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessPost'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/assign-wo:
+    post:
+      summary: 'WO - Assign WO'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                Data:
+                  type: object
+                  properties:
+                    activity_id:
+                      type: integer
+                    assignments:
+                      type: array
+                      example: []
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessPost'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/campaign:
+    get:
+      summary: 'WO - Campaign'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: ServiceRegistrationId
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/service-campaign:
+    get:
+      summary: 'WO - List Service Campaign'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: service_registration_id
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/info:
+    get:
+      summary: 'WO - (Get Status / Wo info)'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: service_registration_id
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: ServiceRegistrationId
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataObject'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/list:
+    get:
+      summary: 'WO - Working Order List (per Stall)'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: Filter[PlateNo]
+          schema: 
+            type: string
+            example: 123
+          allowEmptyValue: true
+        - in: query 
+          name: Filter[CalendarDate]
+          required: true
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: Filter[StallNo]
+          schema: 
+            type: string
+            example: 123
+          allowEmptyValue: true
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/summary-per-stall:
+    get:
+      summary: 'WO - Working Order Queue (Get Summary Stall)'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: Filter[CalendarDate]
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/stall:
+    get:
+      summary: 'WO - Master Stall'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/mechanic:
+    get:
+      summary: 'WO - Master Mechanic'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: Filter[CalendarDate]
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/reason-list:
+    get:
+      summary: 'WO - Reason List'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/summary-dashboard:
+    get:
+      summary: 'WO - Get Summary Dashboard'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: Filter[CalendarDate]
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataObject'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/time-register:
+    get:
+      summary: 'WO - Register WO'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: Filter[Id]
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataObject'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/time-register-progress:
+    get:
+      summary: 'WO - Register Progress WO'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: Filter[Id]
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataObject'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /work-order/trainee:
+    get:
+      summary: 'WO - Get SA'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Working Order'
+      parameters:
+        - in: query 
+          name: Filter[JobPosition]
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  # Folder 'Final Inspection'
+
+  /final-inspection/list:
+    get:
+      summary: 'FI - Final Inspection List'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Final Inspection'
+      parameters:
+        - in: query 
+          name: Filter[CalendarDate]
+          required: true
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: Filter[PlateNo]
+          allowEmptyValue: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /final-inspection/detail:
+    get:
+      summary: 'FI - Final Inspection Detail'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Final Inspection'
+      parameters:
+        - in: query 
+          name: Filter[Id]
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataObject'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+ 
+  /final-inspection/save-final-inspection:
+    post:
+      summary: 'FI - Save Final Inspection Detail'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Final Inspection'
+      parameters:
+        - in: query 
+          name: clock_in_clock_out_id
+          required: true
+          schema: 
+            type: string
+            example: 123
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    clock_in_clock_out_id:
+                      type: integer
+                    engine:
+                      type: object
+                      example: null
+                    suspension:
+                      type: object
+                      example: null
+                    interior:
+                      type: object
+                      example: null
+                    other_notes:
+                      type: object
+                      example: null
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessPost'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /final-inspection/validation:
+    get:
+      summary: 'FI - Final Inspection Validation'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Final Inspection'
+      parameters:
+        - in: query 
+          name: Filter[ChassisNumber]
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataObject'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+ 
+  /final-inspection/master:
+    get:
+      summary: 'FI - Final Inspection Fields'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Final Inspection'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+ 
+  # Folder 'Washing'
+
+  /final-inspection/washing-list:
+    get:
+      summary: 'W - Get Washing List'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Washing'
+      parameters:
+        - in: query 
+          name: Filter[CalendarDate]
+          required: true
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: Filter[PlateNo]
+          allowEmptyValue: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  # Folder 'Manage Service'
+
+  /manage-service/services:
+    get:
+      summary: 'MS - List of Service'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Manage Service'
+      parameters:
+        - in: query 
+          name: Filter[CalendarDate]
+          required: true
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: Filter[DataType]
+          allowEmptyValue: true
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: Filter[ServiceAdvisor]
+          allowEmptyValue: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataObject'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  # Folder 'File Document'
+
+  /file-document/list:
+    get:
+      summary: 'FD - List Document'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'File Document'
+      parameters:
+        - in: query 
+          name: paging[Page]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: paging[Limit]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: sort[Column]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: sort[Type]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: filter[filename]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: filter[type]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: filter[category]
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /Uploads/{PDFfilepath}:
+    get:
+      summary: 'FD - Show File'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'File Document'
+      parameters:
+        - name: PDFfilepath
+          in: path
+          required: true
+          description: suffix PDFfilepath
+          schema:
+            type : string
+            format: string
+            minimum: 1
+      responses:
+        '200':
+          description: Get Image
+          content:
+            application/pdf:
+              schema: 
+               type: string
+               format: binary
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  # Folder 'Admin'
+
+  /admin/admins:
+    get:
+      summary: 'ADM - Get Admin'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Admin'
+      parameters:
+        - in: query 
+          name: sort[column]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: sort[type]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: paging[limit]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: paging[page]
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /admin/auth/login:
+    post:
+      summary: 'ADM - Login Admin'
+      tags:
+        - 'Admin'
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                Data:
+                  type: object
+                  properties:
+                    UserName:
+                      type: string
+                    Password:
+                      type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataObject'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /admin/users:
+    get:
+      summary: 'ADM - Get User From Admin'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Admin'
+      parameters:
+        - in: query 
+          name: sort[column]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: sort[type]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: paging[limit]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: paging[page]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: filter[dealerName][code]
+          schema: 
+            type: string
+            example: 123
+        - in: query 
+          name: filter[employeeName]
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+    post:
+      summary: 'ADM - Insert User From Admin'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Admin'
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                Data:
+                  type: object
+                  example: null
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessPost'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /admin/users/{id}:
+    get:
+      summary: 'ADM - Get User From Admin'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Admin'
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: suffix id
+          schema:
+            type : integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataObject'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /admin/master/dealer:
+    get:
+      summary: 'ADM - Master Dealer'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Admin'
+      parameters:
+        - in: query 
+          name: search
+          required: true
+          schema: 
+            type: string
+            example: 123
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessDataList'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /admin/users/changestatus:
+    post:
+      summary: 'ADM - Change Status'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Admin'
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                Data:
+                  type: object
+                  properties:
+                    UserId:
+                      type: string
+                    IsActive:
+                      type: boolean
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessPost'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /Uploads/{Imagefilepath}:
+    get:
+      summary: 'Commmon - Get Image'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Common'
+      parameters:
+        - name: ImageFfilepath
+          in: path
+          required: true
+          description: suffix Imagefilepath
+          schema:
+            type : string
+            format: string
+            minimum: 1
+      responses:
+        '200':
+          description: Get Image
+          content:
+            image/*:
+              schema: 
+               type: string
+               format: binary
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+components:
+  responses:
+    Error400:
+      description: '400 Bad Request'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error_code:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: bad request
+    Error401:
+      description: '401 Unauthorized'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Attempted to perform an unauthorized operation
+    Error404:
+      description: '404 Not Found'
+    Error500:
+      description: '500 Internal Server'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: terjadi kesalahan yang tidak diketahui
+    SuccessDataList:
+      description: 'Data List'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                example: []
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: sukses
+              origin:
+                type: string
+    SuccessDataObject:
+      description: 'Data Object'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                example: null
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: sukses
+              origin:
+                type: string
+    SuccessPost:
+      description: 'Success Post'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: sukses
+              origin:
+                type: string
+
+  schemas:
+    BookingListData:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          reg_number:
+            type: string
+          queue_number:
+            type: string
+          service_advisor:
+            type: string
+          name:
+            type: string
+          police_number:
+            type: string
+          input_source_id:
+            type: integer
+          input_source:
+            type: string
+          preferred_sa:
+            type: string
+          estimated_service:
+            type: string
+          waiting_time:
+            type: string
+          status_id:
+            type: integer
+          status:
+            type: string
+          is_vip:
+            type: string
+          is_rework:
+            type: string
+          is_ontime:
+            type: string
+          booking_date_time:
+            type: string
+          create_time:
+            type: string
+
+    VehicleModel:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+
+    GetExteriorView:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          circle_check_header_id:
+            type: integer
+          service_registration_id:
+            type: integer
+          data_type:
+            type: integer
+          data_type_text:
+            type: string
+          vehicle_condition:
+            type: integer
+          notes:
+            type: string
+          image_path:
+            type: string
+
+    GetTireView: 
+      type: object
+      properties:
+        id:
+          type: integer
+        circle_check_header_id:
+          type: integer
+        service_registration_id:
+          type: integer
+        front_right:
+          type: string
+        front_right_photo:
+          type: string
+        front_left:
+          type: string
+        front_left_photo:
+          type: string
+        back_right:
+          type: string
+        back_right_photo:
+          type: string
+        back_left:
+          type: string
+        back_left_photo:
+          type: string
+      
+    GetReceivingCheckList: 
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          service_registration_id:
+            type: integer
+          dealer:
+            type: string
+          plate_no:
+            type: string
+          customer:
+            type: string
+          vehicle_model:
+            type: string
+          preferred_sa:
+            type: string
+          service_time:
+            type: string
+          is_complete:
+            type: string
+          is_vip:
+            type: string
+          wo_status:
+            type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  
