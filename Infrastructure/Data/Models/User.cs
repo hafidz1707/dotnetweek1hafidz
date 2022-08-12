@@ -17,4 +17,11 @@ namespace WeekOneApi.Infrastructure.Data.Models
         public string? DeviceId { get; set; }
         public string? Version {get; set; }
     }
+    public class UserChanger
+    {
+        public int id { get; set; }
+        public string? email { get; set; }
+        public string? no_hp {get; set; }
+        public string? password { get; set; }
+    }
 }

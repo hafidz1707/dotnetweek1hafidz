@@ -7,8 +7,15 @@ namespace WeekOneApi.Infrastructure.Data.Models
         public string? message {get; set;}
         public string? origin {get; set;}
     }
-        public class ResponseNoData
+    public class ResponseNoData
     {
+        public bool success {get; set;}
+        public string? message {get; set;}
+        public string? origin {get; set;}
+    }
+    public class ResponseWithData
+    {
+        public object? data {get; set;}
         public bool success {get; set;}
         public string? message {get; set;}
         public string? origin {get; set;}

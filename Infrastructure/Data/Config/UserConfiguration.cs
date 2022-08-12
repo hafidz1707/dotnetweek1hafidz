@@ -9,7 +9,15 @@ namespace WeekOneApi.Infrastructure.Data.Config
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.Property(b => b.id)
-            .HasColumnName("tiltesss");
+            .HasColumnName("id");            
+        }
+    }
+        public class AuthTokenConfiguration : IEntityTypeConfiguration<AuthToken>
+    {
+        public void Configure(EntityTypeBuilder<AuthToken> builder)
+        {
+            builder.Property(b => b.id)
+            .HasColumnName("id");            
         }
     }
 }

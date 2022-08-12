@@ -46,4 +46,10 @@ namespace WeekOneApi.Infrastructure.Data.Models
         public string? type {get; set;}
         public int expires_at {get; set;} 
     }
+
+    public class Token
+    {
+        public string? id { get; set; }
+        public string? username { get; set; }
+    }
 }

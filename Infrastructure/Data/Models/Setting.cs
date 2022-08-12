@@ -8,8 +8,3 @@ public class OtpSettings
     public string? From { get; set; }
     public string? Token { get; set; }
 }
-public class OtpRequest
-{
-    public int? id { get; set; }
-    public int? pin_otp {get; set;}
-}

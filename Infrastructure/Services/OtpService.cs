@@ -16,10 +16,10 @@ class VerifyAccount : IVerifyAccount
     }
     private readonly AppDbContext db;
     
-    public async Task SendOTPAsync(int id, int pin_otp, User user)
+    public async Task SendOTPAsync(int id, string pin_otp, User user)
     {
-        Console.WriteLine("OTP Request ID:" + id);
-        Console.WriteLine("Pin OTP:" + pin_otp);
+        //Console.WriteLine("OTP Request ID:" + id);
+        //Console.WriteLine("Pin OTP:" + pin_otp);
         Console.WriteLine(user);
 
         var client = new HttpClient();
@@ -44,17 +44,20 @@ class VerifyAccount : IVerifyAccount
         {
             response.EnsureSuccessStatusCode();
             var body = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(body);
+            //Console.WriteLine(body);
         }
 
-        Console.WriteLine(_otpSettings.Host);
+        //Console.WriteLine(_otpSettings.Host);
         var email = new MimeMessage();
         email.Sender = MailboxAddress.Parse(_otpSettings.From);
         email.To.Add(MailboxAddress.Parse(user.email));
-        email.Subject = "KODE OTP";
-
+        if (pin_otp.Length == 6) email.Subject = "KODE OTP";
+        else email.Subject = "Reset Password";
+        
         var builder = new BodyBuilder();
-        builder.HtmlBody = "Kode OTP Anda: "+pin_otp;
+        if (pin_otp.Length == 6) builder.HtmlBody = "Kode OTP Anda: "+pin_otp;
+        else builder.HtmlBody = "Password Baru Anda: "+pin_otp;
+        
         email.Body = builder.ToMessageBody();
 
         using var smtp = new SmtpClient();

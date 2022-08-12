@@ -4,15 +4,31 @@
 
 namespace WeekOneApi.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initialize : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AuthTokens",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    userId = table.Column<int>(type: "INTEGER", nullable: false),
+                    token = table.Column<string>(type: "TEXT", nullable: true),
+                    role = table.Column<string>(type: "TEXT", nullable: true),
+                    expiredAt = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuthTokens", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    tiltesss = table.Column<int>(type: "INTEGER", nullable: false)
+                    id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     username = table.Column<string>(type: "TEXT", nullable: true),
                     name = table.Column<string>(type: "TEXT", nullable: true),
@@ -30,12 +46,15 @@ namespace WeekOneApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.tiltesss);
+                    table.PrimaryKey("PK_Users", x => x.id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AuthTokens");
+
             migrationBuilder.DropTable(
                 name: "Users");
         }

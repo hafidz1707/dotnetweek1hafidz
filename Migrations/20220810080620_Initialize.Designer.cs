@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WeekOneApi.Infrastructure.Data;
 
@@ -10,9 +11,10 @@ using WeekOneApi.Infrastructure.Data;
 namespace WeekOneApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220810080620_Initialize")]
+    partial class Initialize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.7");
@@ -90,26 +92,6 @@ namespace WeekOneApi.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("WeekOneApi.Infrastructure.Data.Models.UserChanger", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("email")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("no_hp")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("password")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("id");
-
-                    b.ToTable("UsersChanger");
                 });
 #pragma warning restore 612, 618
         }
