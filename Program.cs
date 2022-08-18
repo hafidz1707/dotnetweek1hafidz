@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 //using System.IdentityModel.Tokens.Jwt;
 //using System.Security.Claims;
 
+using System.Text.Json;
+using Microsoft.Extensions.Caching.Distributed;
+
 OpenApiSecurityScheme securityScheme = new OpenApiSecurityScheme()
 {
     Name = "Authorization",
@@ -78,6 +81,17 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis"];
+    options.InstanceName = "RedisDemo_";
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -88,6 +102,12 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
+
+app.MapGet("/usersRedis", [Authorize] async Task<object> (IDistributedCache cache, AppDbContext db) =>
+{
+    var response = await cache.GetUsers(db);
+    return response;
+});
 
 // Get All Users
 app.MapGet("/auth/list", [Authorize] async(AppDbContext db, HttpContext httpContext) =>
@@ -417,7 +437,7 @@ app.MapGet("/service-registration/statistic", [Authorize] async (DateTime? filte
     DateTime filteredDateTime = filterDateTime ?? DateTime.Now;
     DateTime filteredDate = filteredDateTime.Date;
 
-    List<ServiceList> vip = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip == "1" && item.status_id == 1).ToListAsync();
+    List<ServiceList> vip = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip == "1" && item.status_id <= 3).ToListAsync();
     List<ServiceList> progress = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && (item.status_id == 2 || item.status_id == 3)).ToListAsync();
     List<ServiceList> bookingAndWalkIn = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip != "1" && (item.input_source_id == 1 || item.input_source_id == 2) && item.status_id == 1).ToListAsync();
     
@@ -481,4 +501,42 @@ app.Run();
 public interface IVerifyAccount
 {
     Task SendOTPAsync(int id, string pin_otp, User user);
+}
+internal static class DistribuitedCacheExtentions
+{
+    public static async Task SetRecordAsync<T>(
+            this IDistributedCache cache,
+            string recordId,
+            T data,
+            TimeSpan? absoluteExpireTime = null)
+    {
+        var options = new DistributedCacheEntryOptions();
+        options.AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromSeconds(60);
+        var jsonData = JsonSerializer.Serialize(data);
+        await cache.SetStringAsync(recordId, jsonData, options);
+    }
+    public static async Task<T> GetRecordAsync<T>(this IDistributedCache cache, string recordId)
+    {
+        var jsonData = await cache.GetStringAsync(recordId);
+        if (jsonData is null) return default(T);
+        var dataResponse = JsonSerializer.Deserialize<T>(jsonData);
+        return dataResponse;
+    }
+}
+
+internal static class LoadUsers
+{
+    public static async Task<object> GetUsers(this IDistributedCache cache, AppDbContext db)
+    {
+        List<User>? users = null; //Declaring empty forecasts
+        string recordKey = $"users_{DateTime.Now.ToString("yyyyMMdd_hhmm")}"; //Declaring a unit recordKey to set our get the data
+        users = await cache.GetRecordAsync<List<User>>(recordKey);
+        if (users != null)
+        {
+            return Results.Ok(users);
+        }
+        var result = await db.Users.ToListAsync();
+        await cache.SetRecordAsync(recordKey, result);
+        return Results.Ok(result);
+    }
 }
