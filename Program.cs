@@ -5,6 +5,7 @@ using WeekOneApi.Infrastructure.Services;
 using WeekOneApi.Infrastructure.Data;
 using WeekOneApi.Infrastructure;
 using WeekOneApi.Infrastructure.Shared;
+
 //using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 //using NuGet.Protocol.Plugins;
 using Microsoft.OpenApi.Models;
@@ -14,7 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 //using System.IdentityModel.Tokens.Jwt;
 //using System.Security.Claims;
 
-var securityScheme = new OpenApiSecurityScheme()
+OpenApiSecurityScheme securityScheme = new OpenApiSecurityScheme()
 {
     Name = "Authorization",
     Type = SecuritySchemeType.ApiKey,
@@ -24,7 +25,7 @@ var securityScheme = new OpenApiSecurityScheme()
     Description = "JSON Web Token based security",
 };
 
-var securityReq = new OpenApiSecurityRequirement()
+OpenApiSecurityRequirement securityReq = new OpenApiSecurityRequirement()
 {
     {
         new OpenApiSecurityScheme
@@ -166,10 +167,10 @@ app.MapPost("/auth/login", async (User user, AppDbContext db) =>
         db.AuthTokens.Add(authToken);
         await db.SaveChangesAsync();
 
-        Profile profile = new Profile{name = result.name, email = result.email, phone = result.no_hp};
+        Profile profile = new Profile{name = result.name, email = result.email, phone = result.phone};
         Access_token access_Token = new Access_token{auth_token = token, type = "Bearer", expires_at = authToken.expiredAt};
         Data data = new Data {id = result.id, is_registered = result.is_registered, profile = profile, access_token = access_Token};
-        Response response = new Response {data = data, success = true, message = "Login Berhasil!"};
+        Response<Data> response = new Response<Data> {data = data, success = true, message = "Login Berhasil!"};
         return Results.Ok(response);
     }
 });
@@ -270,7 +271,7 @@ app.MapPut("/profile/update", [Authorize] async (UserChanger editUser, AppDbCont
     UserChanger? checkChanger = await db.UsersChanger.Where(item => item.id == result.id).FirstOrDefaultAsync();
     if (checkChanger != null ) db.UsersChanger.Remove(checkChanger);
 
-    UserChanger? userChanger = new UserChanger{id = result.id, email = editUser.email, no_hp = editUser.no_hp};
+    UserChanger? userChanger = new UserChanger{id = result.id, email = editUser.email, phone = editUser.phone};
 
     db.UsersChanger.Add(userChanger);
     await db.SaveChangesAsync();
@@ -309,7 +310,7 @@ app.MapPost("/profile/otp", [Authorize] async (OtpRequest otpRequest, AppDbConte
         {
             result.pin_otp = 0;
             result.email = userChanger.email;
-            result.no_hp = userChanger.no_hp;
+            result.phone = userChanger.phone;
             db.UsersChanger.Remove(userChanger);
             await db.SaveChangesAsync();
             ResponseNoData responseNoData = new ResponseNoData{success = true, message = "Akun Berhasil Diupdate!"};
@@ -324,7 +325,7 @@ app.MapPost("/profile/otp", [Authorize] async (OtpRequest otpRequest, AppDbConte
     return Results.BadRequest("Data Update Profile Tidak Ditemukan!");
 });
 // Change Profile Password
-app.MapPost("/profile/change-password", async (ChangePassword changePassword, IVerifyAccount verification, AppDbContext db, HttpContext httpContext) =>
+app.MapPost("/profile/change-password", [Authorize] async (ChangePassword changePassword, IVerifyAccount verification, AppDbContext db, HttpContext httpContext) =>
 {
     Token tokenData = new Jwt().GetTokenClaim(httpContext);
     User? result = await db.Users.Where(item => item.id.ToString() == tokenData.id).FirstOrDefaultAsync();
@@ -342,6 +343,146 @@ app.MapPost("/profile/change-password", async (ChangePassword changePassword, IV
     ResponseNoData responseNoData = new ResponseNoData{success = true, message = "Password Berhasil Dirubah!"};
     return Results.Ok(responseNoData);
 });
+
+// Folder 'Service Registration'
+// Get All Service Lists
+app.MapGet("/service-registration/all-list", [Authorize] async(AppDbContext db, HttpContext httpContext) =>
+{
+    Token tokenData = new Jwt().GetTokenClaim(httpContext);
+    return await db.ServiceLists.ToListAsync();
+});
+// Register Walk In
+app.MapPost("service-registration/register-walkin", [Authorize] async (RegisterWalkIn registerWalkIn, AppDbContext db) =>
+{
+    ServiceList serviceList = new ServiceList{
+        reg_number = "100170-SREG-{idFromSecurity}",
+        queue_number = "NonBook-{idFromToday}",
+        plate_number = registerWalkIn.plate_number,
+        input_source_id = 2,
+        input_source = "Walk In",
+        create_time = registerWalkIn.time_stamp,
+        booking_date_time = registerWalkIn.time_stamp};
+    db.ServiceLists.Add(serviceList);
+    await db.SaveChangesAsync();
+    Response<ServiceList> response = new Response<ServiceList>{data = serviceList, success = true,
+    message = $"Plat Nomor {registerWalkIn.plate_number} Berhasil dimasukkan ke antrian service dengan Nomor Antrian NonBook-(idFromToday)"};
+    return Results.Ok(response);
+});
+
+// // Register From Booking
+app.MapPost("service-registration/register-from-booking", [Authorize] async (RegisterBooking registerBooking, AppDbContext db) =>
+{
+    ServiceList serviceList = new ServiceList{
+        reg_number = "100170-SREG-{idFromSecurity}",
+        queue_number = "Book-{idFromToday}",
+        name = registerBooking.name,
+        plate_number = registerBooking.plate_number,
+        input_source_id = 1,
+        input_source = "Booking",
+        is_vip = registerBooking.is_vip,
+        create_time = registerBooking.time_stamp,
+        booking_date_time = registerBooking.time_stamp};
+    db.ServiceLists.Add(serviceList);
+    await db.SaveChangesAsync();
+    Response<ServiceList> response = new Response<ServiceList>{data = serviceList, success = true,
+    message = $"Plat Nomor {registerBooking.plate_number} Berhasil dimasukkan ke antrian service dengan Nomor Antrian Book-(idFromToday)"};
+    return Results.Ok(response);
+});
+
+// Get Service Registration
+app.MapGet("/service-registration/list", [Authorize] async (DateTime? filterDate, AppDbContext db) =>
+{
+    // Filter Configuration
+    DateTime filteredDate = filterDate ?? DateTime.Now.Date;
+    
+    List<ServiceList> vip = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip == "1" && item.status_id == 1).ToListAsync();
+    List<ServiceList> booking = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip != "1" && item.input_source_id == 1 && item.status_id == 1).ToListAsync();
+    List<ServiceList> walkIn = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip != "1" && item.input_source_id == 2 && item.status_id == 1).ToListAsync();
+    List<ServiceList> progress = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && (item.status_id == 2 || item.status_id == 3)).ToListAsync();
+    ResponseSRList responseSRList = new ResponseSRList
+    {
+        vip = vip,
+        booking = booking,
+        walk_in = walkIn,
+        progress = progress
+    };
+    Response<ResponseSRList> response = new Response<ResponseSRList> {data = responseSRList, success = true, message = "Data Successfully Retrieved"};
+    return Results.Ok(response);
+});
+
+// // Get Service Booking Statistic
+app.MapGet("/service-registration/statistic", [Authorize] async (DateTime? filterDateTime, AppDbContext db) =>
+{
+    // Filter Configuration
+    DateTime filteredDate = filterDateTime.Value.Date;
+    DateTime filteredDateTime = filterDateTime ?? DateTime.Now;
+
+    List<ServiceList> vip = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip == "1" && item.status_id == 1).ToListAsync();
+    List<ServiceList> progress = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && (item.status_id == 2 || item.status_id == 3)).ToListAsync();
+    List<ServiceList> bookingAndWalkIn = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip != "1" && (item.input_source_id == 1 || item.input_source_id == 2) && item.status_id == 1).ToListAsync();
+    
+    int customer_less15_min = 0;
+    int customer_more15_min = 0;
+    foreach (ServiceList element in bookingAndWalkIn)
+    {
+        TimeSpan? elementStatistic = filteredDateTime - element.create_time;
+        if (elementStatistic <= TimeSpan.FromMinutes(15)) customer_less15_min += 1;
+        else if (elementStatistic > TimeSpan.FromMinutes(15)) customer_more15_min += 1;
+    }
+    ResponseSRStatistic responseSRStatistic = new ResponseSRStatistic{
+        special_customer = vip.Count,
+        customer_less15_min = customer_less15_min,
+        customer_more15_min = customer_more15_min,
+        completed_customer = progress.Count
+    };
+    Response<ResponseSRStatistic> response = new Response<ResponseSRStatistic>{data = responseSRStatistic, success = true, message = "Data Successfully Retrieved"};
+    return Results.Ok(response);
+});
+
+// Update Service Status
+app.MapPost("service-registration/update-service-status", [Authorize] async (UpdateServiceStatus updateServiceStatus, AppDbContext db) =>
+{
+    ServiceList? result = await db.ServiceLists.Where(item => item.id == updateServiceStatus.service_registration_id).FirstOrDefaultAsync();
+    Console.WriteLine(updateServiceStatus.service_status);
+    if (result is null) return Results.NotFound();
+    if (result.status_id == (int)SRStatus.Waiting_For_Service)
+    {
+        if (updateServiceStatus.service_status != (int)SRStatus.SA_Checking && updateServiceStatus.service_status != (int)SRStatus.Canceled) return Results.BadRequest("Status ID is Not Correct!");
+        result.waiting_time = DateTime.Now - result.booking_date_time;
+        result.status_id = updateServiceStatus.service_status;
+        result.status = "SA Checking";
+    }
+    else if (result.status_id == (int)SRStatus.SA_Checking)
+    {
+        if (updateServiceStatus.service_status != (int)SRStatus.In_Progress_Service) return Results.BadRequest("Status ID is Not Correct!");
+        result.status_id = updateServiceStatus.service_status;
+        result.status = "In Progress Service";
+    }
+    // Status 4 is commented because only Mechanic has the privilige to complete the service
+    // else if (result.status_id == (int)SRStatus.In_Progress_Service)
+    // {
+    //     if (updateServiceStatus.service_status != 4) return Results.BadRequest("Status ID is Not Correct!");
+    //     result.status_id = updateServiceStatus.service_status;
+    //     result.status = "Completed";
+    // }
+    else {
+        return Results.BadRequest("Status ID is Not Correct!");
+    }
+    await db.SaveChangesAsync();
+    Response<ServiceList> response = new Response<ServiceList>{success = true, message = "Status DMS berhasil diupdate"}; 
+    return Results.Ok(response);
+});
+
+// // Resend Status DMS
+// app.MapPost("service-registration/resend-status-dms", [Authorize] async (RegisterWalkIn registerWalkIn) =>
+// {
+//     DateTime now = DateTime.Now;
+//     DateTime nowUtc = DateTime.UtcNow;
+//     Console.WriteLine(now);
+//     Console.WriteLine(registerWalkIn.time_stamp);
+//     //return Results.Ok($"{now}" + $"{nowUtc}");
+//     return Results.Ok(registerWalkIn);
+// });
 
 app.UseAuthentication();
 app.UseRouting();

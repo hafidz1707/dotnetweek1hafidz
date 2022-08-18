@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WeekOneApi.Infrastructure.Data;
 
@@ -10,9 +11,10 @@ using WeekOneApi.Infrastructure.Data;
 namespace WeekOneApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220818013354_EditNoHpToPhone")]
+    partial class EditNoHpToPhone
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.7");
@@ -39,68 +41,6 @@ namespace WeekOneApi.Migrations
                     b.HasKey("id");
 
                     b.ToTable("AuthTokens");
-                });
-
-            modelBuilder.Entity("WeekOneApi.Infrastructure.Data.Models.ServiceList", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("booking_date_time")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("create_time")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("estimated_service")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("input_source")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("input_source_id")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("is_ontime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("is_rework")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("is_vip")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("plate_number")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("preferred_sa")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("queue_number")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("reg_number")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("service_advisor")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("status")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("status_id")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<TimeSpan?>("waiting_time")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("id");
-
-                    b.ToTable("ServiceLists");
                 });
 
             modelBuilder.Entity("WeekOneApi.Infrastructure.Data.Models.User", b =>

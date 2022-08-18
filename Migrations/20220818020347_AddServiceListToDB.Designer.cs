@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WeekOneApi.Infrastructure.Data;
 
@@ -10,9 +11,10 @@ using WeekOneApi.Infrastructure.Data;
 namespace WeekOneApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220818020347_AddServiceListToDB")]
+    partial class AddServiceListToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.7");
@@ -95,7 +97,7 @@ namespace WeekOneApi.Migrations
                     b.Property<int>("status_id")
                         .HasColumnType("INTEGER");
 
-                    b.Property<TimeSpan?>("waiting_time")
+                    b.Property<DateTime?>("waiting_time")
                         .HasColumnType("TEXT");
 
                     b.HasKey("id");

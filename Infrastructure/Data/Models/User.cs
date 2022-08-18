@@ -9,7 +9,7 @@ namespace WeekOneApi.Infrastructure.Data.Models
         public string? dealer_code {get; set; }
         public string? dealer_name { get; set; }
         public string? email { get; set; }
-        public string? no_hp {get; set; }
+        public string? phone {get; set; }
         public string? position_code { get; set; }
         public string? position_name {get; set; }
         public bool is_registered { get; set; }
@@ -21,7 +21,7 @@ namespace WeekOneApi.Infrastructure.Data.Models
     {
         public int id { get; set; }
         public string? email { get; set; }
-        public string? no_hp {get; set; }
+        public string? phone {get; set; }
         public string? password { get; set; }
     }
 }

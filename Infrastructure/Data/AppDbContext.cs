@@ -8,7 +8,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users {get; set;}
     public DbSet<AuthToken> AuthTokens {get; set;}
     public DbSet<UserChanger> UsersChanger {get; set;}
-
+    public DbSet<ServiceList> ServiceLists {get; set;}
     public AppDbContext(DbContextOptions options) : base(options)
     {
         // var folder = Environment.SpecialFolder.LocalApplicationData;

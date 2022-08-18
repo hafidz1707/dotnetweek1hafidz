@@ -50,7 +50,6 @@ public class Jwt
                     result.id = claim.Value;
                 }
             }
-
             return result;
         }
     

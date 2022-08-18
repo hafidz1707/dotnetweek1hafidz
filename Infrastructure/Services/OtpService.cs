@@ -31,7 +31,7 @@ class VerifyAccount : IVerifyAccount
             {
                 { "Authorization", "Bearer "+_otpSettings.Token },
             },
-            Content = new StringContent("{ \"messaging_product\": \"whatsapp\", \"recipient_type\": \"individual\", \"to\": \"6283863385061\", \"type\": \"text\", \"text\": {\"body\": \"Kode OTP Anda: " + pin_otp + "\" } }")
+            Content = new StringContent("{ \"messaging_product\": \"whatsapp\", \"recipient_type\": \"individual\", \"to\": \""+ user.phone +"\", \"type\": \"text\", \"text\": {\"body\": \"Kode OTP Anda: " + pin_otp + "\" } }")
             {
                 Headers =
                 {
@@ -48,19 +48,19 @@ class VerifyAccount : IVerifyAccount
         }
 
         //Console.WriteLine(_otpSettings.Host);
-        var email = new MimeMessage();
+        MimeMessage? email = new MimeMessage();
         email.Sender = MailboxAddress.Parse(_otpSettings.From);
         email.To.Add(MailboxAddress.Parse(user.email));
         if (pin_otp.Length == 6) email.Subject = "KODE OTP";
         else email.Subject = "Reset Password";
         
-        var builder = new BodyBuilder();
+        BodyBuilder? builder = new BodyBuilder();
         if (pin_otp.Length == 6) builder.HtmlBody = "Kode OTP Anda: "+pin_otp;
         else builder.HtmlBody = "Password Baru Anda: "+pin_otp;
         
         email.Body = builder.ToMessageBody();
 
-        using var smtp = new SmtpClient();
+        using SmtpClient? smtp = new SmtpClient();
         smtp.Connect(_otpSettings.Host, _otpSettings.Port, SecureSocketOptions.StartTls);
         smtp.Authenticate(_otpSettings.Username, _otpSettings.Password);
         await smtp.SendAsync(email);

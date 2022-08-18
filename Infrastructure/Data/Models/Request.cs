@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace WeekOneApi.Infrastructure.Data.Models
 {
-    public class Request
+    public class Request<T>
     {
-        public User? Data {get; set;}
+        public T? data {get; set;}
     }
 
     public class RequestId
@@ -20,5 +22,24 @@ namespace WeekOneApi.Infrastructure.Data.Models
     {
         public int? id { get; set; }
         public int? pin_otp {get; set;}
+    }
+    public class RegisterWalkIn
+    {
+        public string? plate_number {get; set;} 
+        //[DataType(DataType.Date)]
+        public DateTime time_stamp {get; set;}
+    }
+    public class RegisterBooking
+    {
+        public string? plate_number {get; set;} 
+        //[DataType(DataType.Date)]
+        public DateTime time_stamp {get; set;}
+        public string? name {get; set;}
+        public string? is_vip {get; set;}
+    }
+    public class UpdateServiceStatus
+    {
+        public int service_registration_id {get; set;} 
+        public int service_status {get; set;}
     }
 }
