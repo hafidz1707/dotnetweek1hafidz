@@ -1,4 +1,4 @@
-namespace WeekOneApi.Infrastructure.Data.Models;
+namespace WeekOneApi.Infrastructure.Shared;
 
 public class ServiceList
 {

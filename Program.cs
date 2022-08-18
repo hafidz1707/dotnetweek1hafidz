@@ -414,20 +414,20 @@ app.MapGet("/service-registration/list", [Authorize] async (DateTime? filterDate
 app.MapGet("/service-registration/statistic", [Authorize] async (DateTime? filterDateTime, AppDbContext db) =>
 {
     // Filter Configuration
-    DateTime filteredDate = filterDateTime.Value.Date;
     DateTime filteredDateTime = filterDateTime ?? DateTime.Now;
+    DateTime filteredDate = filteredDateTime.Date;
 
     List<ServiceList> vip = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip == "1" && item.status_id == 1).ToListAsync();
     List<ServiceList> progress = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && (item.status_id == 2 || item.status_id == 3)).ToListAsync();
     List<ServiceList> bookingAndWalkIn = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip != "1" && (item.input_source_id == 1 || item.input_source_id == 2) && item.status_id == 1).ToListAsync();
     
+    // Count the Service List
     int customer_less15_min = 0;
     int customer_more15_min = 0;
     foreach (ServiceList element in bookingAndWalkIn)
     {
-        TimeSpan? elementStatistic = filteredDateTime - element.create_time;
-        if (elementStatistic <= TimeSpan.FromMinutes(15)) customer_less15_min += 1;
-        else if (elementStatistic > TimeSpan.FromMinutes(15)) customer_more15_min += 1;
+        if (filteredDateTime - element.create_time <= TimeSpan.FromMinutes(15)) customer_less15_min += 1;
+        else if (filteredDateTime - element.create_time > TimeSpan.FromMinutes(15)) customer_more15_min += 1;
     }
     ResponseSRStatistic responseSRStatistic = new ResponseSRStatistic{
         special_customer = vip.Count,
@@ -472,17 +472,6 @@ app.MapPost("service-registration/update-service-status", [Authorize] async (Upd
     Response<ServiceList> response = new Response<ServiceList>{success = true, message = "Status DMS berhasil diupdate"}; 
     return Results.Ok(response);
 });
-
-// // Resend Status DMS
-// app.MapPost("service-registration/resend-status-dms", [Authorize] async (RegisterWalkIn registerWalkIn) =>
-// {
-//     DateTime now = DateTime.Now;
-//     DateTime nowUtc = DateTime.UtcNow;
-//     Console.WriteLine(now);
-//     Console.WriteLine(registerWalkIn.time_stamp);
-//     //return Results.Ok($"{now}" + $"{nowUtc}");
-//     return Results.Ok(registerWalkIn);
-// });
 
 app.UseAuthentication();
 app.UseRouting();

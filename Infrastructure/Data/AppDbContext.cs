@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WeekOneApi.Infrastructure.Data.Models;
+using WeekOneApi.Infrastructure.Shared;
 using System.Reflection;
 
 namespace WeekOneApi.Infrastructure.Data;
