@@ -84,7 +84,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration["Redis"];
-    options.InstanceName = "RedisDemo_";
+    options.InstanceName = "local-redis";
 });
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
@@ -437,10 +437,12 @@ app.MapGet("/service-registration/statistic", [Authorize] async (DateTime? filte
     DateTime filteredDateTime = filterDateTime ?? DateTime.Now;
     DateTime filteredDate = filteredDateTime.Date;
 
-    List<ServiceList> vip = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip == "1" && item.status_id <= 3).ToListAsync();
-    List<ServiceList> progress = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && (item.status_id == 2 || item.status_id == 3)).ToListAsync();
+    //List<ServiceList> vip = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip == "1" && item.status_id <= 3).ToListAsync();
+    //List<ServiceList> progress = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && (item.status_id == 2 || item.status_id == 3)).ToListAsync();
     List<ServiceList> bookingAndWalkIn = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip != "1" && (item.input_source_id == 1 || item.input_source_id == 2) && item.status_id == 1).ToListAsync();
-    
+    int special_customer = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && item.is_vip == "1" && item.status_id <= 3).CountAsync();
+    int completed_customer = await db.ServiceLists.Where(item => item.create_time.Date == filteredDate && (item.status_id == 2 || item.status_id == 3)).CountAsync();
+
     // Count the Service List
     int customer_less15_min = 0;
     int customer_more15_min = 0;
@@ -450,10 +452,10 @@ app.MapGet("/service-registration/statistic", [Authorize] async (DateTime? filte
         else if (filteredDateTime - element.create_time > TimeSpan.FromMinutes(15)) customer_more15_min += 1;
     }
     ResponseSRStatistic responseSRStatistic = new ResponseSRStatistic{
-        special_customer = vip.Count,
+        special_customer = special_customer,
         customer_less15_min = customer_less15_min,
         customer_more15_min = customer_more15_min,
-        completed_customer = progress.Count
+        completed_customer = completed_customer
     };
     Response<ResponseSRStatistic> response = new Response<ResponseSRStatistic>{data = responseSRStatistic, success = true, message = "Data Successfully Retrieved"};
     return Results.Ok(response);
