@@ -102,10 +102,17 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
-
+// Cached Database
+// get All Users
 app.MapGet("/usersRedis", [Authorize] async Task<object> (IDistributedCache cache, AppDbContext db) =>
 {
     var response = await cache.GetUsers(db);
+    return response;
+});
+// get All Services List
+app.MapGet("/servicesRedis", [Authorize] async Task<object> (IDistributedCache cache, AppDbContext db) =>
+{
+    var response = await cache.GetServiceLists(db);
     return response;
 });
 
@@ -526,7 +533,7 @@ internal static class DistribuitedCacheExtentions
     }
 }
 
-internal static class LoadUsers
+internal static class LoadDatasInDatabase
 {
     public static async Task<object> GetUsers(this IDistributedCache cache, AppDbContext db)
     {
@@ -537,7 +544,20 @@ internal static class LoadUsers
         {
             return Results.Ok(users);
         }
-        var result = await db.Users.ToListAsync();
+        List<User>? result = await db.Users.ToListAsync();
+        await cache.SetRecordAsync(recordKey, result);
+        return Results.Ok(result);
+    }
+    public static async Task<object> GetServiceLists(this IDistributedCache cache, AppDbContext db)
+    {
+        List<ServiceList>? serviceLists = null;
+        string recordKey = $"serviceLists_{DateTime.Now.ToString("yyyyMMdd_hhmm")}";
+        serviceLists = await cache.GetRecordAsync<List<ServiceList>>(recordKey);
+        if (serviceLists != null)
+        {
+            return Results.Ok(serviceLists);
+        }
+        List<ServiceList>? result = await db.ServiceLists.ToListAsync();
         await cache.SetRecordAsync(recordKey, result);
         return Results.Ok(result);
     }
