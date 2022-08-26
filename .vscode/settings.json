@@ -14,6 +14,36 @@
             "database": "BSI",
             "username": "SA",
             "password": "MyPass@word"
+        },
+        {
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 1433,
+            "driver": "MSSQL",
+            "name": "LatihanSQL",
+            "database": "Master",
+            "username": "sa",
+            "password": "MySQLpass123"
+        },
+        {
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 1433,
+            "driver": "MSSQL",
+            "name": "QuizSQL",
+            "database": "Master",
+            "username": "SA",
+            "password": "MySQLpass123"
         }
     ]
 }

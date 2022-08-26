@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WeekOneApi.Infrastructure.Data;
 
@@ -10,9 +11,10 @@ using WeekOneApi.Infrastructure.Data;
 namespace WeekOneApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220825033121_CircleCheckDBFinal2")]
+    partial class CircleCheckDBFinal2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.8");
@@ -116,8 +118,7 @@ namespace WeekOneApi.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("id");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("customer_name")
                         .HasColumnType("TEXT");
@@ -171,9 +172,6 @@ namespace WeekOneApi.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("circle_check_header_id")
-                        .IsUnique();
-
                     b.ToTable("ComplaintViews");
                 });
 
@@ -205,8 +203,6 @@ namespace WeekOneApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("id");
-
-                    b.HasIndex("circle_check_header_id");
 
                     b.ToTable("ExteriorViews");
                 });
@@ -254,9 +250,6 @@ namespace WeekOneApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("id");
-
-                    b.HasIndex("circle_check_header_id")
-                        .IsUnique();
 
                     b.ToTable("InteriorViews");
                 });
@@ -385,57 +378,7 @@ namespace WeekOneApi.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("circle_check_header_id")
-                        .IsUnique();
-
                     b.ToTable("TireViews");
-                });
-
-            modelBuilder.Entity("WeekOneApi.Infrastructure.Shared.ComplaintView", b =>
-                {
-                    b.HasOne("WeekOneApi.Infrastructure.Shared.CircleCheck", null)
-                        .WithOne("complaint_notes_view")
-                        .HasForeignKey("WeekOneApi.Infrastructure.Shared.ComplaintView", "circle_check_header_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WeekOneApi.Infrastructure.Shared.ExteriorView", b =>
-                {
-                    b.HasOne("WeekOneApi.Infrastructure.Shared.CircleCheck", null)
-                        .WithMany("exterior_view")
-                        .HasForeignKey("circle_check_header_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WeekOneApi.Infrastructure.Shared.InteriorView", b =>
-                {
-                    b.HasOne("WeekOneApi.Infrastructure.Shared.CircleCheck", null)
-                        .WithOne("interior_view")
-                        .HasForeignKey("WeekOneApi.Infrastructure.Shared.InteriorView", "circle_check_header_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WeekOneApi.Infrastructure.Shared.TireView", b =>
-                {
-                    b.HasOne("WeekOneApi.Infrastructure.Shared.CircleCheck", null)
-                        .WithOne("tire_view")
-                        .HasForeignKey("WeekOneApi.Infrastructure.Shared.TireView", "circle_check_header_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WeekOneApi.Infrastructure.Shared.CircleCheck", b =>
-                {
-                    b.Navigation("complaint_notes_view");
-
-                    b.Navigation("exterior_view");
-
-                    b.Navigation("interior_view");
-
-                    b.Navigation("tire_view");
                 });
 #pragma warning restore 612, 618
         }

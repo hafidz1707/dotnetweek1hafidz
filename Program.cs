@@ -103,12 +103,14 @@ if (app.Environment.IsDevelopment())
 
 // app.UseHttpsRedirection();
 // Cached Database
+
 // get All Users
 app.MapGet("/usersRedis", [Authorize] async Task<object> (IDistributedCache cache, AppDbContext db) =>
 {
     var response = await cache.GetUsers(db);
     return response;
 });
+
 // get All Services List
 app.MapGet("/servicesRedis", [Authorize] async Task<object> (IDistributedCache cache, AppDbContext db) =>
 {
@@ -122,6 +124,7 @@ app.MapGet("/auth/list", [Authorize] async(AppDbContext db, HttpContext httpCont
     Token tokenData = new Jwt().GetTokenClaim(httpContext);
     return await db.Users.Select(user => new UserDTO(user)).ToListAsync();
 });
+
 // Edit Users Based on ID
 app.MapPut("/auth/list/{id}", [Authorize] async (int id, User editUser, AppDbContext db) =>
 {
@@ -136,6 +139,7 @@ app.MapPut("/auth/list/{id}", [Authorize] async (int id, User editUser, AppDbCon
     await db.SaveChangesAsync();
     return Results.Ok(responseNoData);
 });
+
 // Delete Users Based on ID
 app.MapDelete("/auth/list/{id}", async (int id, AppDbContext db) =>
 {
@@ -166,6 +170,7 @@ app.MapPost("/auth/register", async (User user, AppDbContext db) =>
         return Results.BadRequest(responseNoData);
     }
 });
+
 // Login Account Get Token
 app.MapPost("/auth/login", async (User user, AppDbContext db) =>
 {
@@ -183,7 +188,7 @@ app.MapPost("/auth/login", async (User user, AppDbContext db) =>
         }
 
         string token = new Jwt().GenerateJwtToken(result);
-        Int32 expiredAt = (Int32)DateTime.UtcNow.AddDays(1).Subtract(new DateTime(2022, 08, 12)).TotalSeconds;
+        Int32 expiredAt = (Int32)DateTime.UtcNow.AddDays(1).Subtract(new DateTime(2022, 08, 25)).TotalSeconds;
         AuthToken authToken = new AuthToken
         {
             userId = result.id,
@@ -201,6 +206,7 @@ app.MapPost("/auth/login", async (User user, AppDbContext db) =>
         return Results.Ok(response);
     }
 });
+
 // Forgot Password sent to Email & Phone
 app.MapPost("/auth/forgot-password", async (User user, IVerifyAccount verification, AppDbContext db) =>
 {
@@ -224,6 +230,7 @@ app.MapPost("/auth/forgot-password", async (User user, IVerifyAccount verificati
         return Results.Ok(responseNoData);
     }
 });
+
 // Verify Account
 app.MapPost("/auth/verify/", async (RequestId requestId, IVerifyAccount verification, AppDbContext db) =>
 {
@@ -238,6 +245,7 @@ app.MapPost("/auth/verify/", async (RequestId requestId, IVerifyAccount verifica
     ResponseNoData responseNoData = new ResponseNoData{success = true, message = "Kode OTP Telah Dikirim!"};
     return Results.Ok(responseNoData);
 });
+
 // Resend OTP
 app.MapPost("/auth/resend-otp/", async (RequestId requestId, IVerifyAccount verification, AppDbContext db) =>
 {
@@ -252,6 +260,7 @@ app.MapPost("/auth/resend-otp/", async (RequestId requestId, IVerifyAccount veri
     ResponseNoData responseNoData = new ResponseNoData{success = true, message = "Kode OTP Telah Dikirim Ulang!"};
     return Results.Ok(responseNoData);
 });
+
 // Confirmation OTP
 app.MapPost("/auth/otp", async (OtpRequest otpRequest, AppDbContext db) =>
 {
@@ -284,6 +293,7 @@ app.MapGet("/profile/detail/", [Authorize] async (AppDbContext db, HttpContext h
     if (result == null) return Results.NotFound("Data Tidak Ditemukan!");
     return Results.Ok(result);
 });
+
 // Update Profile
 app.MapPut("/profile/update", [Authorize] async (UserChanger editUser, AppDbContext db, IVerifyAccount verification, HttpContext httpContext) =>
 {
@@ -310,6 +320,7 @@ app.MapPut("/profile/update", [Authorize] async (UserChanger editUser, AppDbCont
     ResponseNoData responseNoData = new ResponseNoData{success = true, message = "Kode OTP Telah Dikirim!"};
     return Results.Ok(responseNoData);
 });
+
 // Resend OTP Profile
 app.MapPost("/profile/otp-resend", [Authorize] async (RequestId requestId, AppDbContext db, IVerifyAccount verification, HttpContext httpContext) =>
 {
@@ -325,6 +336,7 @@ app.MapPost("/profile/otp-resend", [Authorize] async (RequestId requestId, AppDb
     ResponseNoData responseNoData = new ResponseNoData{success = true, message = "Kode OTP Telah Dikirim Ulang!"};
     return Results.Ok(responseNoData);
 });
+
 // Confirmation OTP to Change Profile
 app.MapPost("/profile/otp", [Authorize] async (OtpRequest otpRequest, AppDbContext db) =>
 {
@@ -351,6 +363,7 @@ app.MapPost("/profile/otp", [Authorize] async (OtpRequest otpRequest, AppDbConte
     }
     return Results.BadRequest("Data Update Profile Tidak Ditemukan!");
 });
+
 // Change Profile Password
 app.MapPost("/profile/change-password", [Authorize] async (ChangePassword changePassword, IVerifyAccount verification, AppDbContext db, HttpContext httpContext) =>
 {
@@ -378,6 +391,7 @@ app.MapGet("/service-registration/all-list", [Authorize] async(AppDbContext db, 
     Token tokenData = new Jwt().GetTokenClaim(httpContext);
     return await db.ServiceLists.ToListAsync();
 });
+
 // Register Walk In
 app.MapPost("service-registration/register-walkin", [Authorize] async (RegisterWalkIn registerWalkIn, AppDbContext db) =>
 {
@@ -396,7 +410,7 @@ app.MapPost("service-registration/register-walkin", [Authorize] async (RegisterW
     return Results.Ok(response);
 });
 
-// // Register From Booking
+// Register From Booking
 app.MapPost("service-registration/register-from-booking", [Authorize] async (RegisterBooking registerBooking, AppDbContext db) =>
 {
     ServiceList serviceList = new ServiceList{
@@ -437,7 +451,7 @@ app.MapGet("/service-registration/list", [Authorize] async (DateTime? filterDate
     return Results.Ok(response);
 });
 
-// // Get Service Booking Statistic
+// Get Service Booking Statistic
 app.MapGet("/service-registration/statistic", [Authorize] async (DateTime? filterDateTime, AppDbContext db) =>
 {
     // Filter Configuration
@@ -480,6 +494,15 @@ app.MapPost("service-registration/update-service-status", [Authorize] async (Upd
         result.waiting_time = DateTime.Now - result.booking_date_time;
         result.status_id = updateServiceStatus.service_status;
         result.status = "SA Checking";
+        // Add to Circle Check
+        CircleCheck circleCheck = new CircleCheck{
+            service_registration_id = result.id,
+            service_date = DateTime.Now,
+            plate_number = result.plate_number,
+            customer_name = result.name
+            };
+        db.CircleChecks.Add(circleCheck);
+        await db.SaveChangesAsync();
     }
     else if (result.status_id == (int)SRStatus.SA_Checking)
     {
@@ -500,6 +523,489 @@ app.MapPost("service-registration/update-service-status", [Authorize] async (Upd
     await db.SaveChangesAsync();
     Response<ServiceList> response = new Response<ServiceList>{success = true, message = "Status DMS berhasil diupdate"}; 
     return Results.Ok(response);
+});
+
+// Folder 'Circle Check'
+// Get Circle Check
+app.MapGet("/circle-check/get-circle-check", [Authorize] async (int? UserRegistrationId, AppDbContext db) =>
+{
+    int userRegistrationId = UserRegistrationId ?? 0;
+    CircleCheck? result = await db.CircleChecks.Where(item => item.service_registration_id == userRegistrationId)
+        .Include(item => item.interior_view)
+        .Include(item => item.complaint_notes_view)
+        .Include(item => item.exterior_view)
+        .Include(item => item.tire_view)
+        .FirstOrDefaultAsync();
+    if (result == null) return Results.NotFound();
+    return Results.Ok(result);
+});
+
+// Save Circle Check
+app.MapPost("/circle-check/save-circle-check", [Authorize] async (SaveCircleCheck saveCircleCheck, AppDbContext db) =>
+{
+    CircleCheck? result = await db.CircleChecks.Where(item => item.service_registration_id == saveCircleCheck.service_registration_id).FirstOrDefaultAsync();
+    if (result != null)
+    {
+        result.customer_name = saveCircleCheck.customer_info?.customer_name;
+        result.vin = saveCircleCheck.customer_info?.vin;
+        result.phone = saveCircleCheck.customer_info?.phone;
+        InteriorView interiorView = new InteriorView{
+            circle_check_header_id = result.id,
+            service_registration_id = result.service_registration_id,
+            stnk = saveCircleCheck.interior.stnk,
+            service_booklet = saveCircleCheck.interior.service_booklet,
+            spare_tire = saveCircleCheck.interior.spare_tire,
+            safety_kit = saveCircleCheck.interior.safety_kit,
+            fuel_gauge = saveCircleCheck.interior.fuel_gauge,
+            other_stuff = saveCircleCheck.interior.other_stuff,
+            other_stuff_notes = saveCircleCheck.interior.other_stuff_notes
+        };
+        db.InteriorViews.Add(interiorView);
+        ComplaintView complaintView = new ComplaintView{
+            circle_check_header_id = result.id,
+            service_registration_id = result.service_registration_id,
+            notes = saveCircleCheck.complaint_notes
+        };
+        db.ComplaintViews.Add(complaintView);
+        await db.SaveChangesAsync();
+        return Results.Ok();
+    }
+    return Results.NotFound();
+});
+
+// Save Interior View Photo
+app.MapPost("/circle-check/save-interior-view-photo", [Authorize] async (AppDbContext db, HttpRequest rtx) =>
+{
+    int.TryParse(rtx.Form["service_registration_id"], out int service_registration_id);
+    var photo_1 = rtx.Form.Files["photo_1"];
+    var photo_2 = rtx.Form.Files["photo_2"];
+    var photo_3 = rtx.Form.Files["photo_3"];
+    InteriorView? result = await db.InteriorViews.Where(item => item.service_registration_id == service_registration_id).FirstOrDefaultAsync();
+    var extension_1 = new FileInfo(rtx.Form.Files["photo_1"].FileName);
+    var filePath_1 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_Interior1_{extension_1.Extension}");
+    
+    using (var stream = System.IO.File.Create(filePath_1))
+    {
+        await rtx.Form.Files["photo_1"].CopyToAsync(stream);
+    }
+    result.interior_photo_1 = filePath_1;
+    if (photo_2 != null)
+    {
+        var extension_2 = new FileInfo(rtx.Form.Files["photo_2"].FileName);
+        var filePath_2 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_Interior2_{extension_2.Extension}");
+        using (var stream = System.IO.File.Create(filePath_2))
+        {
+            await rtx.Form.Files["photo_2"].CopyToAsync(stream);
+        }
+        result.interior_photo_2 = filePath_2;
+    }
+    if (photo_3 != null) 
+    {
+        var extension_3 = new FileInfo(rtx.Form.Files["photo_3"].FileName);
+        var filePath_3 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_Interior3_{extension_3.Extension}");
+        using (var stream = System.IO.File.Create(filePath_3))
+        {
+            await rtx.Form.Files["photo_3"].CopyToAsync(stream);
+        }
+        result.interior_photo_3 = filePath_3;
+    }
+    await db.SaveChangesAsync();
+    return Results.Ok(result);
+});
+
+// Delete Interior View
+app.MapPost("/circle-check/delete-interior-view", [Authorize] async (int? ServiceRegistrationId, AppDbContext db) =>
+{
+    int serviceRegistrationId = ServiceRegistrationId ?? 0;
+    InteriorView? result = await db.InteriorViews.Where(item => item.service_registration_id == serviceRegistrationId).FirstOrDefaultAsync();
+    if (result == null) return Results.NotFound();
+    db.InteriorViews.Remove(result);
+    await db.SaveChangesAsync();
+    return Results.Ok(result);
+});
+
+// Delete Complaint Note
+app.MapPost("/circle-check/delete-complaint-note", [Authorize] async (int? ServiceRegistrationId, AppDbContext db) =>
+{
+    int serviceRegistrationId = ServiceRegistrationId ?? 0;
+    ComplaintView? result = await db.ComplaintViews.Where(item => item.service_registration_id == serviceRegistrationId).FirstOrDefaultAsync();
+    if (result == null) return Results.NotFound();
+    db.ComplaintViews.Remove(result);
+    await db.SaveChangesAsync();
+    return Results.Ok(result);
+});
+
+// Create Update Exterior View
+app.MapPost("/circle-check/create-update-exterior-view", [Authorize] async (AppDbContext db, HttpRequest rtx) =>
+{
+    int.TryParse(rtx.Form["service_registration_id"], out int service_registration_id);
+    int.TryParse(rtx.Form["type"], out int type);
+    int.TryParse(rtx.Form["vehicle_condition"], out int vehicle_condition);
+    string? notes = rtx.Form["notes"];
+    var image_path = rtx.Form.Files["capture_file"];
+   
+    int circle_check_header_id = await db.CircleChecks
+        .Where(item => item.service_registration_id == service_registration_id)
+        .Select(item => item.id)
+        .FirstOrDefaultAsync();
+    ExteriorView? result = await db.ExteriorViews
+        .Where(item => item.circle_check_header_id == service_registration_id)
+        .Where(item => item.data_type == type)
+        .FirstOrDefaultAsync();
+    if (result != null)
+    {  
+        result.vehicle_condition = vehicle_condition;
+        result.notes = notes;
+        var extension = new FileInfo(rtx.Form.Files["capture_file"].FileName);
+        var filePath = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_Exterior_{extension.Extension}");
+        using (var stream = System.IO.File.Create(filePath))
+        {
+            await rtx.Form.Files["capture_file"].CopyToAsync(stream);
+        }
+        result.image_path = filePath;
+    }
+    else
+    {
+        String? data_type_text = "";
+        if (type == 1) data_type_text = "Front View";
+        else if (type == 2) data_type_text = "Right View";
+        else if (type == 3) data_type_text = "Left View";
+        else if (type == 4) data_type_text = "Back View";
+        else if (type == 5) data_type_text = "Top View";
+        var extension = new FileInfo(rtx.Form.Files["capture_file"].FileName);
+        var filePath = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_Exterior_{extension.Extension}");
+        ExteriorView exteriorView = new ExteriorView
+        {
+            circle_check_header_id = circle_check_header_id,
+            service_registration_id = service_registration_id,
+            data_type = type,
+            data_type_text = data_type_text,
+            vehicle_condition = vehicle_condition,
+            notes = notes,
+            image_path = filePath
+        };
+        using (var stream = System.IO.File.Create(filePath))
+        {
+            await rtx.Form.Files["capture_file"].CopyToAsync(stream);
+        }
+        db.ExteriorViews.Add(exteriorView);
+        await db.SaveChangesAsync();
+        return Results.Ok(exteriorView);
+    }
+    await db.SaveChangesAsync();
+    return Results.Ok(result);
+});
+
+// Get Exterior View
+app.MapGet("/circle-check/get-exterior-view", [Authorize] async (int? exteriorId, AppDbContext db) =>
+{
+    int exteriorViewId = exteriorId ?? 0;
+    ExteriorView? result = await db.ExteriorViews.Where(item => item.id == exteriorViewId).FirstOrDefaultAsync();
+    if (result == null) return Results.NotFound();
+    return Results.Ok(result);
+});
+
+// Get Exterior View List
+app.MapGet("/circle-check/get-exterior-view-list", [Authorize] async (int? ServiceRegistrationId, AppDbContext db) =>
+{
+    int serviceRegistrationId = ServiceRegistrationId ?? 0;
+    List<ExteriorView>? result = await db.ExteriorViews.Where(item => item.service_registration_id == serviceRegistrationId).ToListAsync();
+    if (result == null) return Results.NotFound();
+    return Results.Ok(result);
+});
+
+// Delete Exterior View
+app.MapPost("/circle-check/delete-exterior-view", [Authorize] async (int? exteriorId, AppDbContext db) =>
+{
+    int exteriorViewId = exteriorId ?? 0;
+    ExteriorView? result = await db.ExteriorViews.Where(item => item.id == exteriorViewId).FirstOrDefaultAsync();
+    if (result == null) return Results.NotFound();
+    db.ExteriorViews.Remove(result);
+    await db.SaveChangesAsync();
+    return Results.Ok(result);
+});
+
+// Create Update Tire View
+app.MapPost("/circle-check/create-update-tire-view", [Authorize] async (AppDbContext db, HttpRequest rtx) =>
+{
+    int.TryParse(rtx.Form["service_registration_id"], out int service_registration_id);
+    string front_right = rtx.Form["front_right"];
+    string front_left = rtx.Form["front_left"];
+    string back_right = rtx.Form["back_right"];
+    string back_left = rtx.Form["back_left"];
+    var extension = new FileInfo(rtx.Form.Files["front_right_photo_1"].FileName);
+
+    int circle_check_header_id = await db.CircleChecks
+        .Where(item => item.service_registration_id == service_registration_id)
+        .Select(item => item.id)
+        .FirstOrDefaultAsync();
+    TireView? result = await db.TireViews
+        .Where(item => item.circle_check_header_id == service_registration_id)
+        .FirstOrDefaultAsync();
+    
+    
+    if (result == null)
+    {
+        TireView tireView = new TireView
+        {
+            circle_check_header_id = circle_check_header_id,
+            service_registration_id = service_registration_id,
+            front_right = front_right,
+            front_left = front_left,
+            back_right = back_right,
+            back_left = back_left
+        };
+        var filePath_frontRight_1 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFR1_{extension.Extension}");
+        var filePath_frontLeft_1 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFL1_{extension.Extension}");
+        var filePath_backRight_1 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBR1_{extension.Extension}");
+        var filePath_backLeft_1 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBL1_{extension.Extension}");
+        // Front Right
+        using (var stream = System.IO.File.Create(filePath_frontRight_1))
+        {
+            await rtx.Form.Files["front_right_photo_1"].CopyToAsync(stream);
+        }
+        tireView.front_right_photo_1 = filePath_frontRight_1;
+        if (rtx.Form.Files["front_right_photo_2"] != null)
+        {
+            var filePath_frontRight_2 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFR2_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_frontRight_2))
+            {
+                await rtx.Form.Files["front_right_photo_2"].CopyToAsync(stream);
+            }
+            tireView.front_right_photo_2 = filePath_frontRight_2;
+        }
+        if (rtx.Form.Files["front_right_photo_3"] != null)
+        {
+            var filePath_frontRight_3 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFR3_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_frontRight_3))
+            {
+                await rtx.Form.Files["front_right_photo_3"].CopyToAsync(stream);
+            }
+            tireView.front_right_photo_3 = filePath_frontRight_3;
+        }
+        // Front Left
+        using (var stream = System.IO.File.Create(filePath_frontLeft_1))
+        {
+            await rtx.Form.Files["front_left_photo_1"].CopyToAsync(stream);
+        }
+        tireView.front_left_photo_1 = filePath_frontLeft_1;
+        if (rtx.Form.Files["front_left_photo_2"] != null)
+        {
+            var filePath_frontLeft_2 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFL2_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_frontLeft_2))
+            {
+                await rtx.Form.Files["front_left_photo_2"].CopyToAsync(stream);
+            }
+            tireView.front_left_photo_2 = filePath_frontLeft_2;
+        }
+        if (rtx.Form.Files["front_left_photo_3"] != null)
+        {
+            var filePath_frontLeft_3 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFL3_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_frontLeft_3))
+            {
+                await rtx.Form.Files["front_left_photo_3"].CopyToAsync(stream);
+            }
+            tireView.front_left_photo_3 = filePath_frontLeft_3;
+        }
+        // Back Right
+        using (var stream = System.IO.File.Create(filePath_backRight_1))
+        {
+            await rtx.Form.Files["back_right_photo_1"].CopyToAsync(stream);
+        }
+        tireView.back_right_photo_1 = filePath_backRight_1;
+        if (rtx.Form.Files["back_right_photo_2"] != null)
+        {
+            var filePath_backRight_2 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBR2_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_backRight_2))
+            {
+                await rtx.Form.Files["back_right_photo_2"].CopyToAsync(stream);
+            }
+            tireView.back_right_photo_2 = filePath_backRight_2;
+        }
+        if (rtx.Form.Files["back_right_photo_3"] != null)
+        {
+            var filePath_backRight_3 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBR3_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_backRight_3))
+            {
+                await rtx.Form.Files["back_right_photo_3"].CopyToAsync(stream);
+            }
+            tireView.back_right_photo_3 = filePath_backRight_3;
+        }
+        // Back Left
+        using (var stream = System.IO.File.Create(filePath_backLeft_1))
+        {
+            await rtx.Form.Files["back_left_photo_1"].CopyToAsync(stream);
+        }
+        tireView.back_left_photo_1 = filePath_backLeft_1;
+        if (rtx.Form.Files["back_left_photo_2"] != null)
+        {
+            var filePath_backLeft_2 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBL2_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_backLeft_2))
+            {
+                await rtx.Form.Files["back_left_photo_2"].CopyToAsync(stream);
+            }
+            tireView.back_left_photo_2 = filePath_backLeft_2;
+        }
+        if (rtx.Form.Files["back_left_photo_3"] != null)
+        {
+            var filePath_backLeft_3 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBL3_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_backLeft_3))
+            {
+                await rtx.Form.Files["back_left_photo_3"].CopyToAsync(stream);
+            }
+            tireView.back_left_photo_3 = filePath_backLeft_3;
+        }
+        db.TireViews.Add(tireView);
+        await db.SaveChangesAsync();
+        return Results.Ok(tireView);
+    }
+    if (result != null)
+    {
+        var filePath_frontRight_1 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFR1_{extension.Extension}");
+        var filePath_frontLeft_1 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFL1_{extension.Extension}");
+        var filePath_backRight_1 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBR1_{extension.Extension}");
+        var filePath_backLeft_1 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBL1_{extension.Extension}");
+        // Front Right
+        using (var stream = System.IO.File.Create(filePath_frontRight_1))
+        {
+            await rtx.Form.Files["front_right_photo_1"].CopyToAsync(stream);
+        }
+        result.front_right_photo_1 = filePath_frontRight_1;
+        if (rtx.Form.Files["front_right_photo_2"] != null)
+        {
+            var filePath_frontRight_2 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFR2_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_frontRight_2))
+            {
+                await rtx.Form.Files["front_right_photo_2"].CopyToAsync(stream);
+            }
+            result.front_right_photo_2 = filePath_frontRight_2;
+        }
+        if (rtx.Form.Files["front_right_photo_3"] != null)
+        {
+            var filePath_frontRight_3 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFR3_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_frontRight_3))
+            {
+                await rtx.Form.Files["front_right_photo_3"].CopyToAsync(stream);
+            }
+            result.front_right_photo_3 = filePath_frontRight_3;
+        }
+        // Front Left
+        using (var stream = System.IO.File.Create(filePath_frontLeft_1))
+        {
+            await rtx.Form.Files["front_left_photo_1"].CopyToAsync(stream);
+        }
+        result.front_left_photo_1 = filePath_frontLeft_1;
+        if (rtx.Form.Files["front_left_photo_2"] != null)
+        {
+            var filePath_frontLeft_2 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFL2_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_frontLeft_2))
+            {
+                await rtx.Form.Files["front_left_photo_2"].CopyToAsync(stream);
+            }
+            result.front_left_photo_2 = filePath_frontLeft_2;
+        }
+        if (rtx.Form.Files["front_left_photo_3"] != null)
+        {
+            var filePath_frontLeft_3 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireFL3_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_frontLeft_3))
+            {
+                await rtx.Form.Files["front_left_photo_3"].CopyToAsync(stream);
+            }
+            result.front_left_photo_3 = filePath_frontLeft_3;
+        }
+        // Back Right
+        using (var stream = System.IO.File.Create(filePath_backRight_1))
+        {
+            await rtx.Form.Files["back_right_photo_1"].CopyToAsync(stream);
+        }
+        result.back_right_photo_1 = filePath_backRight_1;
+        if (rtx.Form.Files["back_right_photo_2"] != null)
+        {
+            var filePath_backRight_2 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBR2_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_backRight_2))
+            {
+                await rtx.Form.Files["back_right_photo_2"].CopyToAsync(stream);
+            }
+            result.back_right_photo_2 = filePath_backRight_2;
+        }
+        if (rtx.Form.Files["back_right_photo_3"] != null)
+        {
+            var filePath_backRight_3 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBR3_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_backRight_3))
+            {
+                await rtx.Form.Files["back_right_photo_3"].CopyToAsync(stream);
+            }
+            result.back_right_photo_3 = filePath_backRight_3;
+        }
+        // Back Left
+        using (var stream = System.IO.File.Create(filePath_backLeft_1))
+        {
+            await rtx.Form.Files["back_left_photo_1"].CopyToAsync(stream);
+        }
+        result.back_left_photo_1 = filePath_backLeft_1;
+        if (rtx.Form.Files["back_left_photo_2"] != null)
+        {
+            var filePath_backLeft_2 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBL2_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_backLeft_2))
+            {
+                await rtx.Form.Files["back_left_photo_2"].CopyToAsync(stream);
+            }
+            result.back_left_photo_2 = filePath_backLeft_2;
+        }
+        if (rtx.Form.Files["back_left_photo_3"] != null)
+        {
+            var filePath_backLeft_3 = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_TireBL3_{extension.Extension}");
+            using (var stream = System.IO.File.Create(filePath_backLeft_3))
+            {
+                await rtx.Form.Files["back_left_photo_3"].CopyToAsync(stream);
+            }
+            result.back_left_photo_3 = filePath_backLeft_3;
+        }
+    }
+
+    await db.SaveChangesAsync();
+    return Results.Ok(result);
+});
+
+// Get Tire View
+app.MapGet("/circle-check/get-tire-view", [Authorize] async (int? ServiceRegistrationId, AppDbContext db) =>
+{
+    int serviceRegistrationId = ServiceRegistrationId ?? 0;
+    TireView? result = await db.TireViews.Where(item => item.service_registration_id == serviceRegistrationId).FirstOrDefaultAsync();
+    if (result == null) return Results.NotFound();
+    return Results.Ok(result);
+});
+
+// Finalize Circle Check
+app.MapPost("/circle-check/finalize-circle-check", [Authorize] async (HttpRequest rtx, AppDbContext db) =>
+{
+    int.TryParse(rtx.Form["service_registration_id"], out int service_registration_id);
+    
+    CircleCheck? result = await db.CircleChecks
+    .Where(item => item.service_registration_id == service_registration_id)
+    .Include(item => item.interior_view)
+    .Include(item => item.complaint_notes_view)
+    .Include(item => item.exterior_view)
+    .Include(item => item.tire_view)
+    .FirstOrDefaultAsync();
+    if (result == null) return Results.NotFound();
+    var extension = new FileInfo(rtx.Form.Files["capture_sign"].FileName);
+    var filePath = Path.Combine("image", $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}_signature_{extension.Extension}");
+    using (var stream = System.IO.File.Create(filePath))
+    {
+        await rtx.Form.Files["capture_sign"].CopyToAsync(stream);
+    }
+    result.signature = filePath;
+    await db.SaveChangesAsync();
+    return Results.Ok(result);
+});
+
+// Get Receiving Check List
+app.MapGet("/circle-check/get-receiving-check-list", [Authorize] async (AppDbContext db) =>
+{
+    List<CircleCheck>? result = await db.CircleChecks.ToListAsync();
+    if (result == null) return Results.NotFound();
+    return Results.Ok(result);
 });
 
 app.UseAuthentication();
@@ -532,7 +1038,6 @@ internal static class DistribuitedCacheExtentions
         return dataResponse;
     }
 }
-
 internal static class LoadDatasInDatabase
 {
     public static async Task<object> GetUsers(this IDistributedCache cache, AppDbContext db)

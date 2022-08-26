@@ -10,6 +10,11 @@ public class AppDbContext : DbContext
     public DbSet<AuthToken> AuthTokens {get; set;}
     public DbSet<UserChanger> UsersChanger {get; set;}
     public DbSet<ServiceList> ServiceLists {get; set;}
+    public DbSet<CircleCheck> CircleChecks {get; set;}
+    public DbSet<ExteriorView> ExteriorViews {get; set;}
+    public DbSet<TireView> TireViews {get; set;}
+    public DbSet<InteriorView> InteriorViews {get; set;}
+    public DbSet<ComplaintView> ComplaintViews {get; set;}
     public AppDbContext(DbContextOptions options) : base(options)
     {
         // var folder = Environment.SpecialFolder.LocalApplicationData;
